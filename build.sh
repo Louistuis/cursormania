@@ -1,11 +1,11 @@
 #!/bin/bash
-# Builds CursorSpaceX.app (universal: Apple silicon + Intel) and a release zip.
+# Builds CursorMania.app (universal: Apple silicon + Intel) and a release zip.
 # Needs only the Command Line Tools. The app is ad-hoc signed, not notarized.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 BUILD="$ROOT/build"
-APP="$BUILD/CursorSpaceX.app"
+APP="$BUILD/CursorMania.app"
 VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
 
 echo "▸ compiling $VERSION (release)…"
@@ -13,17 +13,17 @@ cd "$ROOT"
 for ARCH in arm64 x86_64; do
     swift build -c release --triple "$ARCH-apple-macosx26.0" 2>&1 | grep -E "error" || true
 done
-ARM="$ROOT/.build/arm64-apple-macosx/release/CursorSpaceX"
-X86="$ROOT/.build/x86_64-apple-macosx/release/CursorSpaceX"
+ARM="$ROOT/.build/arm64-apple-macosx/release/CursorMania"
+X86="$ROOT/.build/x86_64-apple-macosx/release/CursorMania"
 [ -x "$ARM" ] && [ -x "$X86" ] || { echo "✗ build failed"; exit 1; }
-BIN="$BUILD/CursorSpaceX-universal"
+BIN="$BUILD/CursorMania-universal"
 mkdir -p "$BUILD"
 lipo -create "$ARM" "$X86" -output "$BIN"
 
 echo "▸ assembling bundle…"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/CursorSpaceX"
+cp "$BIN" "$APP/Contents/MacOS/CursorMania"
 
 echo "▸ icon…"
 cp "$ROOT/Assets/AppIcon.png" "$BUILD/icon1024.png"
@@ -40,10 +40,10 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleName</key>                 <string>CursorSpaceX</string>
-    <key>CFBundleDisplayName</key>          <string>CursorSpaceX</string>
+    <key>CFBundleName</key>                 <string>CursorMania</string>
+    <key>CFBundleDisplayName</key>          <string>CursorMania</string>
     <key>CFBundleIdentifier</key>           <string>com.lou15.cursorspacex</string>
-    <key>CFBundleExecutable</key>           <string>CursorSpaceX</string>
+    <key>CFBundleExecutable</key>           <string>CursorMania</string>
     <key>CFBundleIconFile</key>             <string>AppIcon</string>
     <key>CFBundlePackageType</key>          <string>APPL</string>
     <key>CFBundleShortVersionString</key>   <string>$VERSION</string>
@@ -60,8 +60,8 @@ echo "▸ signing (ad-hoc)…"
 codesign --force --deep --sign - "$APP"
 
 echo "▸ zipping…"
-# One stable name, so releases/latest/download/CursorSpaceX.zip always works.
-rm -f "$BUILD/CursorSpaceX.zip"
-( cd "$BUILD" && ditto -c -k --keepParent CursorSpaceX.app CursorSpaceX.zip )
-( cd "$BUILD" && shasum -a 256 CursorSpaceX.zip | tee CursorSpaceX.zip.sha256 )
+# One stable name, so releases/latest/download/CursorMania.zip always works.
+rm -f "$BUILD/CursorMania.zip"
+( cd "$BUILD" && ditto -c -k --keepParent CursorMania.app CursorMania.zip )
+( cd "$BUILD" && shasum -a 256 CursorMania.zip | tee CursorMania.zip.sha256 )
 echo "✓ $APP"

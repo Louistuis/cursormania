@@ -5,4 +5,4 @@ let args = CommandLine.arguments
 if let cmd = args.dropFirst().first, cmd.hasPrefix("--") {
     exit(CLI.run(Array(args.dropFirst())))
 }
-CursorSpaceXApp.main()
+CursorManiaApp.main()

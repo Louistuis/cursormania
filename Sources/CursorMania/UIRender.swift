@@ -77,7 +77,7 @@ enum UIRender {
             return 0
         default:
             print("""
-            cursorspacex command line:
+            cursormania command line:
               --list                       every built-in theme id
               --apply <id> [--size 1.2]    wear a theme system-wide
               --restore                    back to the stock macOS cursor

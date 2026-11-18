@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "CursorSpaceX",
+    name: "CursorMania",
     platforms: [.macOS(.v26)],
     targets: [
         .executableTarget(
-            name: "CursorSpaceX",
-            path: "Sources/CursorSpaceX",
+            name: "CursorMania",
+            path: "Sources/CursorMania",
             swiftSettings: [.unsafeFlags(["-O"], .when(configuration: .release))],
             linkerSettings: [
                 .linkedFramework("AppKit"),

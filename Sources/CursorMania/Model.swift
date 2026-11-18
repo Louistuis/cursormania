@@ -219,7 +219,7 @@ final class AppModel: ObservableObject {
         do {
             if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
         } catch {
-            NSLog("CursorSpaceX: login item change failed: \(error)")
+            NSLog("CursorMania: login item change failed: \(error)")
         }
         launchAtLogin = SMAppService.mainApp.status == .enabled
     }

@@ -63,7 +63,7 @@ struct TopBar: View {
         ZStack {
             HStack(spacing: 6) {
                 Spacer().frame(width: 70)
-                Text("cursorspacex").tight(15, .semibold).foregroundStyle(DS.ink)
+                Text("cursormania").tight(15, .semibold).foregroundStyle(DS.ink)
                 Chip(text: "v\(AppInfo.version)")
                 Spacer()
                 if model.page == .browse {

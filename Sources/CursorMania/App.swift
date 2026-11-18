@@ -1,12 +1,12 @@
 import SwiftUI
 import AppKit
 
-struct CursorSpaceXApp: App {
+struct CursorManiaApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var model = AppModel.shared
 
     var body: some Scene {
-        Window("cursorspacex", id: "main") {
+        Window("cursormania", id: "main") {
             MainView()
                 .environmentObject(model)
                 .background(WindowOpener())
@@ -76,7 +76,7 @@ struct MenuContent: View {
         }
         Button("restore macOS cursor") { model.restore() }.disabled(model.active == nil)
         Divider()
-        Button("open cursorspacex…") {
+        Button("open cursormania…") {
             NSApp.setActivationPolicy(.regular)
             openWindow(id: "main")
             NSApp.activate(ignoringOtherApps: true)
@@ -121,7 +121,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: .main) { note in
-            guard let w = note.object as? NSWindow, w.identifier?.rawValue.contains("main") == true || w.title == "cursorspacex" else { return }
+            guard let w = note.object as? NSWindow, w.identifier?.rawValue.contains("main") == true || w.title == "cursormania" else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 if !NSApp.windows.contains(where: { $0.isVisible && $0.canBecomeMain }) { NSApp.setActivationPolicy(.accessory) }
             }

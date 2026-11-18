@@ -105,7 +105,7 @@ struct CursorRole: Identifiable, Hashable {
 
     static func role(_ id: String) -> CursorRole { all.first { $0.id == id }! }
 
-    /// Every name the system registers that CursorSpaceX may touch. Used to save
+    /// Every name the system registers that CursorMania may touch. Used to save
     /// the original cursors before the first theme goes on.
     static var everyName: [String] {
         var names = Set(all.flatMap(\.names))

@@ -4,13 +4,13 @@ import UniformTypeIdentifiers
 
 /// Puts a theme on the real, system-wide cursor and takes it off again.
 ///
-/// Registrations live in WindowServer, so they stay after CursorSpaceX quits and
+/// Registrations live in WindowServer, so they stay after CursorMania quits and
 /// last until logout. The app re-applies the saved theme at login.
 final class CursorEngine {
     static let shared = CursorEngine()
 
     let api = CGSCursorAPI.shared
-    let queue = DispatchQueue(label: "cursorspacex.engine", qos: .userInitiated)
+    let queue = DispatchQueue(label: "cursormania.engine", qos: .userInitiated)
 
     private let appliedKey = "engine.themeIsApplied"
 

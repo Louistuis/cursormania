@@ -3,7 +3,7 @@
 # usage: Tools/shot.sh out.png [--theme id] [--width w --height h]
 set -euo pipefail
 OUT="$1"; shift
-BIN="$(cd "$(dirname "$0")/.." && pwd)/build/CursorSpaceX.app/Contents/MacOS/CursorSpaceX"
+BIN="$(cd "$(dirname "$0")/.." && pwd)/build/CursorMania.app/Contents/MacOS/CursorMania"
 FIFO="$(mktemp)"
 "$BIN" --shot-window "$@" --hold 5 > "$FIFO" &
 PID=$!
