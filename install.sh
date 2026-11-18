@@ -28,7 +28,7 @@ ver="$(sw_vers -productVersion)"
 # Only ask for a password when the destination needs it.
 SUDO=""
 OLD="CursorSpaceX.app"   # cursormania was called cursorspacex until 0.3.0
-if [ ! -w "$DEST" ] || { [ -e "$DEST/$APP" ] && [ ! -w "$DEST/$APP" ]; } || [ -e "$DEST/$OLD" ]; then SUDO="sudo"; fi
+if [ ! -w "$DEST" ] || { [ -e "$DEST/$APP" ] && [ ! -w "$DEST/$APP" ]; } || { [ -e "$DEST/$OLD" ] && [ ! -w "$DEST/$OLD" ]; }; then SUDO="sudo"; fi
 
 quit_app() {
     osascript -e 'tell application id "com.lou15.cursorspacex" to quit' >/dev/null 2>&1 || true
