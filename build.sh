@@ -25,8 +25,8 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/CursorSpaceX"
 
-echo "▸ rendering icon…"
-"$APP/Contents/MacOS/CursorSpaceX" --render-icon "$BUILD/icon1024.png" >/dev/null
+echo "▸ icon…"
+cp "$ROOT/Assets/AppIcon.png" "$BUILD/icon1024.png"
 ICONSET="$BUILD/AppIcon.iconset"; rm -rf "$ICONSET"; mkdir -p "$ICONSET"
 for spec in "16 16x16" "32 16x16@2x" "32 32x32" "64 32x32@2x" "128 128x128" "256 128x128@2x" \
             "256 256x256" "512 256x256@2x" "512 512x512" "1024 512x512@2x"; do
