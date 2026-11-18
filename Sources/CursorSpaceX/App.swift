@@ -18,7 +18,7 @@ struct CursorSpaceXApp: App {
             CommandGroup(replacing: .newItem) {}
             CommandMenu("Cursor") {
                 Button("Shuffle") { model.shuffle() }.keyboardShortcut("r")
-                Button("Make Your Own…") { model.editing = BuilderView.blank(from: model.active) }.keyboardShortcut("n")
+                Button("Make a Cursor…") { model.startCreate(from: nil) }.keyboardShortcut("n")
                 Divider()
                 Button("Restore macOS Cursor") { model.restore() }.keyboardShortcut(.delete, modifiers: [.command, .shift])
             }
@@ -68,6 +68,12 @@ struct MenuContent: View {
         }
         Divider()
         Button("shuffle") { model.shuffle() }
+        Button("make a cursor…") {
+            model.startCreate(from: nil)
+            NSApp.setActivationPolicy(.regular)
+            openWindow(id: "main")
+            NSApp.activate(ignoringOtherApps: true)
+        }
         Button("restore macOS cursor") { model.restore() }.disabled(model.active == nil)
         Divider()
         Button("open cursorspacex…") {

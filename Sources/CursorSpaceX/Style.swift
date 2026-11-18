@@ -39,11 +39,47 @@ struct RGBA: Codable, Hashable {
     static let white = RGBA(1, 1, 1)
 }
 
+/// The body: the silhouette every arrow-style state is built on.
 enum ArrowShape: String, Codable, CaseIterable, Identifiable {
-    case classic, sleek, dart, dot, ring, pixel
+    case classic, round, chunky, sleek, needle, dart, triangle, pin, dot, ring, pixel
     var id: String { rawValue }
     var isDot: Bool { self == .dot || self == .ring }
-    var title: String { rawValue }
+    var title: String {
+        switch self {
+        case .classic: return "classic"
+        case .round: return "soft"
+        case .chunky: return "chunky"
+        case .sleek: return "sleek"
+        case .needle: return "needle"
+        case .dart: return "dart"
+        case .triangle: return "triangle"
+        case .pin: return "pin"
+        case .dot: return "dot"
+        case .ring: return "ring"
+        case .pixel: return "pixel"
+        }
+    }
+}
+
+/// The surface: what the body is "made of".
+enum Finish: String, Codable, CaseIterable, Identifiable {
+    case flat, gloss, bevel, chrome, holo, stripes, dots, checker, carbon, glitter, hollow
+    var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .flat: return "flat"
+        case .gloss: return "glossy"
+        case .bevel: return "aqua"
+        case .chrome: return "chrome"
+        case .holo: return "holo"
+        case .stripes: return "stripes"
+        case .dots: return "polka"
+        case .checker: return "checker"
+        case .carbon: return "carbon"
+        case .glitter: return "glitter"
+        case .hollow: return "outline"
+        }
+    }
 }
 
 enum Motion: String, Codable, CaseIterable, Identifiable {
@@ -77,34 +113,73 @@ struct CursorStyle: Codable, Hashable {
     var motion: Motion = .none
     var accent: RGBA = RGBA(0x0a84ff)
     var scale: Double = 1
+    var finish: Finish = .flat
+
+    init() {}
+
+    // Missing keys fall back to defaults, so looks saved by older versions still load.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let d = CursorStyle()
+        shape = (try? c.decodeIfPresent(ArrowShape.self, forKey: .shape)) ?? d.shape
+        fill = (try? c.decodeIfPresent([RGBA].self, forKey: .fill)) ?? d.fill
+        angle = (try? c.decodeIfPresent(Double.self, forKey: .angle)) ?? d.angle
+        outline = (try? c.decodeIfPresent(RGBA.self, forKey: .outline)) ?? d.outline
+        outlineWidth = (try? c.decodeIfPresent(Double.self, forKey: .outlineWidth)) ?? d.outlineWidth
+        glow = (try? c.decodeIfPresent(RGBA.self, forKey: .glow)) ?? nil
+        glowRadius = (try? c.decodeIfPresent(Double.self, forKey: .glowRadius)) ?? d.glowRadius
+        shadow = (try? c.decodeIfPresent(Double.self, forKey: .shadow)) ?? d.shadow
+        gloss = (try? c.decodeIfPresent(Bool.self, forKey: .gloss)) ?? d.gloss
+        motion = (try? c.decodeIfPresent(Motion.self, forKey: .motion)) ?? d.motion
+        accent = (try? c.decodeIfPresent(RGBA.self, forKey: .accent)) ?? d.accent
+        scale = (try? c.decodeIfPresent(Double.self, forKey: .scale)) ?? d.scale
+        finish = (try? c.decodeIfPresent(Finish.self, forKey: .finish)) ?? d.finish
+        if fill.isEmpty { fill = d.fill }
+    }
 }
 
 enum ThemeCategory: String, Codable, CaseIterable, Identifiable {
-    case essentials, pop, gradient, neon, glass, metal, pixel, dots, animated, bold, custom
+    case essentials, shapes, spectrum, pastel, pop, gradient, neon, glass, aqua, metal, chrome, pattern, sparkle, outline, pixel, dots, animated, bold, custom
     var id: String { rawValue }
     var title: String {
         switch self {
         case .essentials: return "essentials"
+        case .shapes: return "shapes"
+        case .spectrum: return "spectrum"
+        case .pastel: return "pastel"
         case .pop: return "color pop"
         case .gradient: return "gradients"
         case .neon: return "neon"
         case .glass: return "glass"
+        case .aqua: return "aqua"
         case .metal: return "metal"
+        case .chrome: return "chrome & holo"
+        case .pattern: return "patterns"
+        case .sparkle: return "glitter"
+        case .outline: return "outline"
         case .pixel: return "pixel"
         case .dots: return "dots"
         case .animated: return "animated"
         case .bold: return "big & bold"
-        case .custom: return "made by you"
+        case .custom: return "mine"
         }
     }
     var symbol: String {
         switch self {
         case .essentials: return "cursorarrow"
+        case .shapes: return "triangle"
+        case .spectrum: return "rainbow"
+        case .pastel: return "cloud"
         case .pop: return "paintpalette"
         case .gradient: return "circle.lefthalf.filled"
         case .neon: return "sparkle"
         case .glass: return "drop"
+        case .aqua: return "capsule"
         case .metal: return "seal"
+        case .chrome: return "circle.hexagongrid"
+        case .pattern: return "square.grid.3x3.topleft.filled"
+        case .sparkle: return "sparkles"
+        case .outline: return "circle.dashed"
         case .pixel: return "square.grid.3x3"
         case .dots: return "circle.fill"
         case .animated: return "wand.and.stars"

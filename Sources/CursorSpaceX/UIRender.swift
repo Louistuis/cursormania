@@ -13,6 +13,7 @@ enum UIRender {
             // The shell captures it with `screencapture -l <id>`; see Tools/shot.sh.
             let model = AppModel.shared
             if let id = CLI.value(args, "--theme") { model.activeID = id }
+            pageArgs(args, model)
             let w = Double(CLI.value(args, "--width") ?? "1180") ?? 1180
             let h = Double(CLI.value(args, "--height") ?? "820") ?? 820
             NSApp.setActivationPolicy(.accessory)
@@ -33,9 +34,7 @@ enum UIRender {
             let out = CLI.value(args, "--render-ui") ?? "ui.png"
             let model = AppModel.shared
             if let id = CLI.value(args, "--theme") { model.activeID = id }
-            if let s = CLI.value(args, "--section") {
-                model.section = s == "all" ? .all : (ThemeCategory(rawValue: s).map { .category($0) } ?? .all)
-            }
+            pageArgs(args, model)
             let width = Double(CLI.value(args, "--width") ?? "1180") ?? 1180
             let view = MainView(renderMode: true).environmentObject(model).frame(width: width)
             return write(view, to: out, scale: 2) ? 0 : 1
@@ -89,6 +88,16 @@ enum UIRender {
             """)
             return 2
         }
+    }
+
+    /// --page browse|create|mine, --section <category>, --draft <theme id>
+    @MainActor
+    static func pageArgs(_ args: [String], _ model: AppModel) {
+        if let s = CLI.value(args, "--section") {
+            model.section = s == "all" ? .all : (ThemeCategory(rawValue: s).map { .category($0) } ?? .all)
+        }
+        if let d = CLI.value(args, "--draft"), let t = CLI.theme(d) { model.draft = AppModel.newDraft(from: t) }
+        if let p = CLI.value(args, "--page"), let page = Page(rawValue: p) { model.page = page }
     }
 
     @MainActor

@@ -209,8 +209,13 @@ private struct Scene {
     func pointer() {
         switch style.shape {
         case .classic, .pixel: paint(Paths.classicArrow(tip: tip))
+        case .round: paint(Paths.softArrow(tip: tip))
+        case .chunky: paint(Paths.chunkyArrow(tip: tip))
         case .sleek: paint(Paths.sleekArrow(tip: tip))
+        case .needle: paint(Paths.needle(tip: tip))
         case .dart: paint(Paths.dart(tip: tip))
+        case .triangle: paint(Paths.triangle(tip: tip))
+        case .pin: paint(Paths.pin(tip: tip))
         case .dot: paint(Paths.circle(dotCenter, 6.2))
         case .ring:
             let p = CGMutablePath()
@@ -249,8 +254,20 @@ private struct Scene {
         ctx.saveGState()
         ctx.addPath(path)
         ctx.clip(using: .winding)
-        fill(bounds)
-        if style.gloss || style.motion == .shimmer { gloss(bounds) }
+        if style.finish == .hollow {
+            // Outline only: a whisper of the colour inside, the rim does the talking.
+            ctx.setFillColor((fills.first ?? .white).alpha(0.16).cg)
+            ctx.fill(bounds)
+            ctx.addPath(path.normalized(using: .winding))
+            ctx.setLineWidth(max(1.6, style.outlineWidth * 1.6))
+            ctx.setLineJoin(.round)
+            ctx.setStrokeColor((fills.first ?? .white).alpha(1).cg)
+            ctx.strokePath()
+        } else {
+            fill(bounds)
+            finishOverlay(path, bounds)
+        }
+        if style.gloss || style.motion == .shimmer || style.finish == .bevel || style.finish == .chrome { gloss(bounds) }
         if let details {
             ctx.addPath(details)
             ctx.setLineWidth(0.85)
@@ -265,14 +282,25 @@ private struct Scene {
     }
 
     func fill(_ r: CGRect) {
-        let colors = fills
+        var colors = fills
+        var angle = style.angle
+        if style.finish == .chrome {
+            // Polished bands of light and dark, tinted by the first colour.
+            let tint = colors[0]
+            colors = [tint.mix(.white, 0.88), tint.mix(.black, 0.12), tint.mix(.white, 0.6), tint.mix(.black, 0.5), tint.mix(.white, 0.35), tint.mix(.white, 0.9)]
+            angle = 105
+        }
+        if style.finish == .holo {
+            holo(r)
+            return
+        }
         if colors.count == 1 {
             ctx.setFillColor(colors[0].cg)
             ctx.fill(r)
             return
         }
         guard let grad = CGGradient(colorsSpace: CGColorSpace(name: CGColorSpace.sRGB), colors: colors.map(\.cg) as CFArray, locations: nil) else { return }
-        let a = style.angle * .pi / 180
+        let a = angle * .pi / 180
         let d = CGPoint(x: cos(a), y: sin(a))
         let half = (abs(r.width * d.x) + abs(r.height * d.y)) / 2
         let c = CGPoint(x: r.midX, y: r.midY)
@@ -281,9 +309,121 @@ private struct Scene {
                                options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
     }
 
+    /// Iridescent foil: a rainbow swirl over the base colour.
+    func holo(_ r: CGRect) {
+        let base = fills.first ?? .white
+        ctx.setFillColor(base.cg)
+        ctx.fill(r)
+        let hues: [RGBA] = [RGBA(0xff9ad5), RGBA(0xffe28a), RGBA(0x9dffc4), RGBA(0x8fd8ff), RGBA(0xc7a2ff), RGBA(0xff9ad5)]
+        // A conic sweep built from thin wedges.
+        let c = CGPoint(x: r.minX + r.width * 0.42, y: r.minY + r.height * 0.45)
+        let radius = hypot(r.width, r.height)
+        let steps = 72
+        let start = 2 * Double.pi * t + 0.6
+        for i in 0..<steps {
+            let f = Double(i) / Double(steps)
+            let x = f * Double(hues.count - 1)
+            let k = min(Int(x), hues.count - 2)
+            ctx.setFillColor(hues[k].mix(hues[k + 1], x - Double(k)).alpha(0.82).cg)
+            let a0 = start + 2 * .pi * f, a1 = a0 + 2 * .pi / Double(steps) + 0.01
+            ctx.move(to: c)
+            ctx.addArc(center: c, radius: radius, startAngle: a0, endAngle: a1, clockwise: false)
+            ctx.closePath()
+            ctx.fillPath()
+        }
+        let sheen = [CGColor(gray: 1, alpha: 0.5), CGColor(gray: 1, alpha: 0)] as CFArray
+        if let s = CGGradient(colorsSpace: CGColorSpace(name: CGColorSpace.sRGB), colors: sheen, locations: [0, 1]) {
+            ctx.drawLinearGradient(s, start: CGPoint(x: r.minX, y: r.minY), end: CGPoint(x: r.midX, y: r.midY), options: [])
+        }
+    }
+
+    /// Ink for patterns: light on dark bodies, dark on light ones.
+    var patternInk: CGColor {
+        let lum = fills.map(\.luminance).reduce(0, +) / Double(max(fills.count, 1))
+        return lum < 0.55 ? CGColor(gray: 1, alpha: 0.38) : CGColor(gray: 0, alpha: 0.2)
+    }
+
+    func finishOverlay(_ path: CGPath, _ r: CGRect) {
+        switch style.finish {
+        case .stripes:
+            ctx.setStrokeColor(patternInk)
+            ctx.setLineWidth(1.3)
+            var x = r.minX - r.height
+            let shift = CGFloat(t) * 3.6
+            while x < r.maxX + r.height {
+                ctx.move(to: CGPoint(x: x + shift, y: r.minY)); ctx.addLine(to: CGPoint(x: x + shift + r.height, y: r.maxY))
+                x += 3.6
+            }
+            ctx.strokePath()
+        case .dots:
+            ctx.setFillColor(patternInk)
+            var row = 0
+            var y = r.minY + 1
+            while y < r.maxY {
+                var x = r.minX + (row.isMultiple(of: 2) ? 1 : 2.8)
+                while x < r.maxX { ctx.fillEllipse(in: CGRect(x: x - 0.75, y: y - 0.75, width: 1.5, height: 1.5)); x += 3.6 }
+                y += 3.1; row += 1
+            }
+        case .checker:
+            ctx.setFillColor(patternInk)
+            let s: CGFloat = 2.6
+            var y = r.minY, row = 0
+            while y < r.maxY {
+                var x = r.minX + (row.isMultiple(of: 2) ? 0 : s)
+                while x < r.maxX { ctx.fill(CGRect(x: x, y: y, width: s, height: s)); x += s * 2 }
+                y += s; row += 1
+            }
+        case .carbon:
+            // Tight woven twill: alternating light and dark slivers.
+            let s: CGFloat = 1.6
+            var y = r.minY, row = 0
+            while y < r.maxY {
+                var x = r.minX, col = 0
+                while x < r.maxX {
+                    let light = (row + col).isMultiple(of: 2)
+                    ctx.setFillColor(CGColor(gray: light ? 1 : 0, alpha: light ? 0.13 : 0.22))
+                    ctx.fill(CGRect(x: x, y: y, width: s * 2, height: s))
+                    x += s * 2; col += 1
+                }
+                y += s; row += 1
+            }
+        case .glitter:
+            // Seeded sparkles, so every frame and every size agree; they twinkle when animated.
+            var seed: UInt64 = 0x9E3779B97F4A7C15
+            func rnd() -> CGFloat { seed = seed &* 6364136223846793005 &+ 1442695040888963407; return CGFloat(seed >> 33) / CGFloat(1 << 31) }
+            for i in 0..<70 {
+                let x = r.minX + rnd() * r.width, y = r.minY + rnd() * r.height
+                let size = 0.35 + rnd() * 0.9
+                let phase = rnd()
+                let tw = frames > 1 ? 0.35 + 0.65 * abs(sin(.pi * (Double(phase) + t))) : 0.55 + 0.45 * Double(phase)
+                let col = i % 5 == 0 ? style.accent.alpha(tw) : RGBA.white.alpha(tw * 0.95)
+                ctx.setFillColor(col.cg)
+                ctx.fillEllipse(in: CGRect(x: x, y: y, width: size, height: size))
+            }
+        case .bevel:
+            // Lit from the top-left: a bright inner rim above, a soft dark one below.
+            ctx.saveGState()
+            ctx.translateBy(x: 0.9, y: 0.9)
+            ctx.addPath(path)
+            ctx.setLineWidth(2.2)
+            ctx.setStrokeColor(CGColor(gray: 1, alpha: 0.75))
+            ctx.strokePath()
+            ctx.restoreGState()
+            ctx.saveGState()
+            ctx.translateBy(x: -0.8, y: -0.8)
+            ctx.addPath(path)
+            ctx.setLineWidth(2.4)
+            ctx.setStrokeColor(CGColor(gray: 0, alpha: 0.28))
+            ctx.strokePath()
+            ctx.restoreGState()
+        default:
+            break
+        }
+    }
+
     func gloss(_ r: CGRect) {
         let space = CGColorSpace(name: CGColorSpace.sRGB)
-        if style.gloss {
+        if style.gloss || style.finish == .bevel || style.finish == .chrome {
             // Soft top highlight, like light hitting glass.
             let colors = [CGColor(gray: 1, alpha: 0.62), CGColor(gray: 1, alpha: 0.08), CGColor(gray: 1, alpha: 0)] as CFArray
             if let g = CGGradient(colorsSpace: space, colors: colors, locations: [0, 0.45, 0.6]) {
@@ -488,6 +628,33 @@ private enum Paths {
 
     static func sleekArrow(tip: CGPoint) -> CGPath {
         polygon([.init(x: -0.3, y: -0.6), .init(x: 0.2, y: 16.4), .init(x: 4.8, y: 12.4), .init(x: 11.8, y: 11.8)], radius: 1.3, offset: tip)
+    }
+
+    static func softArrow(tip: CGPoint) -> CGPath {
+        polygon([.init(x: -0.4, y: -0.7), .init(x: -0.2, y: 17.2), .init(x: 4.1, y: 13.4), .init(x: 6.7, y: 19.4),
+                 .init(x: 9.6, y: 18.2), .init(x: 7.1, y: 12.4), .init(x: 12.8, y: 12.2)], radius: 1.5, offset: tip)
+    }
+
+    static func chunkyArrow(tip: CGPoint) -> CGPath {
+        polygon([.init(x: -0.4, y: -0.6), .init(x: -0.2, y: 18.6), .init(x: 5.0, y: 14.6), .init(x: 8.0, y: 21.2),
+                 .init(x: 12.2, y: 19.4), .init(x: 9.4, y: 13.4), .init(x: 15.6, y: 13.2)], radius: 1.8, offset: tip)
+    }
+
+    static func needle(tip: CGPoint) -> CGPath {
+        polygon([.init(x: -0.3, y: -0.6), .init(x: 0.1, y: 20.2), .init(x: 3.4, y: 16.2), .init(x: 8.2, y: 16.0)], radius: 0.9, offset: tip)
+    }
+
+    static func triangle(tip: CGPoint) -> CGPath {
+        polygon([.init(x: -0.5, y: -0.5), .init(x: 15.0, y: 5.6), .init(x: 5.6, y: 15.0)], radius: 1.4, offset: tip)
+    }
+
+    static func pin(tip: CGPoint) -> CGPath {
+        // A teardrop with its point on the hotspot.
+        let c = CGPoint(x: tip.x + 9.2, y: tip.y + 9.2)
+        let m = CGMutablePath()
+        m.addPath(circle(c, 7.4))
+        m.addPath(rr(tip.x, tip.y, 9.2, 9.2, 0.9))
+        return m
     }
 
     static func dart(tip: CGPoint) -> CGPath {

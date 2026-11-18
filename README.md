@@ -1,9 +1,10 @@
 <p align="center"><img src="site/public/img/icon.png" width="112" alt=""></p>
 <h1 align="center">cursorspacex</h1>
-<p align="center">every cursor on your mac, restyled.<br>80+ looks, all 38 cursor states, one click. native swift, free and open source.</p>
+<p align="center">every cursor on your mac, restyled.<br>220+ looks, all 38 cursor states, one click, or make your own in seven clicks. native swift, free and open source.</p>
 <p align="center"><a href="https://csx.lou15.com"><b>csx.lou15.com</b></a></p>
 
 <p align="center"><img src="site/public/img/app.png" width="860" alt="the cursorspacex window"></p>
+<p align="center"><img src="site/public/img/create.png" width="860" alt="the create page"></p>
 
 ## install
 
@@ -27,8 +28,10 @@ curl -fsSL https://csx.lou15.com/install.sh | bash -s uninstall
 
 - **the real cursor, system-wide.** No overlay window chasing the mouse. cursorspacex registers its images with WindowServer under the same names macOS uses for its own cursors, so the pointer is as smooth as stock because it is drawn the same way.
 - **every state.** Arrow, context menu, help, busy, the wait beachball, text and vertical text, link, open and closed hand, counting hands, copy, alias, move, not allowed, poof, crosshairs, cell, screenshot, zoom, and all eighteen resize edges.
-- **80+ looks** in essentials, color pop, gradients, neon, glass, metal, pixel, dots, animated and big & bold.
-- **make your own:** shape, fills and gradients, outline, glow, glass shine, shadow, motion, accent and size, with every state redrawing live.
+- **221 looks** in essentials, shapes, spectrum, pastel, color pop, gradients, neon, glass, aqua, metal, chrome & holo, patterns, glitter, outline, pixel, dots, animated and big & bold.
+- **11 shapes:** classic, soft, chunky, sleek, needle, dart, triangle, pin, dot, ring, pixel.
+- **11 finishes:** flat, glossy, aqua, chrome, holo, stripes, polka, checker, carbon, glitter, outline, plus glass.
+- **make your own in seven clicks** (shape, colour, finish, outline, glow, motion, size) with a big live preview you can hover, "surprise me", and "try it live on my mac", which wears the draft system-wide while you click. Your looks live in "mine".
 - **sticks around:** re-applied at login, after sleep and after a user switch. Size from 0.75x to 2.5x.
 - **menu bar switcher** with favorites, shuffle and restore.
 

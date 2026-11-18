@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cursorspacex · every cursor on your mac, restyled</title>
-<meta name="description" content="cursorspacex is a free, open source mac app that restyles the real macOS cursor. 80+ looks, every cursor state, one click.">
+<meta name="description" content="cursorspacex is a free, open source mac app that restyles the real macOS cursor. 220+ looks, every cursor state, one click, or make your own.">
 <meta property="og:title" content="cursorspacex">
-<meta property="og:description" content="every cursor on your mac, restyled. 80+ looks, one click. free and open source.">
+<meta property="og:description" content="every cursor on your mac, restyled. 220+ looks, or make your own. free and open source.">
 <meta property="og:image" content="https://csx.lou15.com/img/app.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.png">
@@ -25,6 +25,7 @@
   <nav>
     <a href="#states">states</a>
     <a href="#looks">looks</a>
+    <a href="#make">make</a>
     <a href="#features">features</a>
     <a href="#faq">faq</a>
   </nav>
@@ -62,11 +63,11 @@
       </div>
       <div class="cta-cap">
         <span class="caption">free and open source. macOS 26 or newer.</span>
-        <span class="caption">mit licence. v0.1.0</span>
+        <span class="caption">mit licence. v0.2.0</span>
       </div>
 
       <div class="shot reveal">
-        <img src="/img/app.png" alt="the cursorspacex window: every state of the graphite look above a gallery of cursor looks" width="1800" height="1280">
+        <img src="/img/app.png" alt="the cursorspacex window: every state of the graphite look above a gallery of cursor looks" width="1800" height="1273">
         <p class="caption">cursorspacex.app</p>
       </div>
     </div>
@@ -80,24 +81,38 @@
     </div>
     <div class="switch" id="stateSwitch">
       <button data-img="graphite" class="on">graphite</button>
+      <button data-img="aqua-grape">aqua grape</button>
+      <button data-img="holo">holo</button>
       <button data-img="neon-pink">neon pink</button>
+      <button data-img="candy-stripe">candy stripe</button>
+      <button data-img="night-sky">night sky</button>
       <button data-img="handheld">handheld</button>
-      <button data-img="frosted">frosted</button>
-      <button data-img="halo">halo</button>
-      <button data-img="gold">gold</button>
+      <button data-img="line-pink">line pink</button>
     </div>
     <img class="states-img" id="statesImg" src="/img/states-graphite.png" alt="all cursor states of the selected look" width="1640" height="703">
   </section>
 
   <section id="looks" class="wrap">
     <div class="center reveal">
-      <p class="eyebrow">80+ looks</p>
+      <p class="eyebrow">221 looks</p>
       <h2>hover one. it's your cursor now.</h2>
       <p class="lede">this page wears whatever you point at, so you can try before you install. click to keep it while you scroll.</p>
     </div>
     <div class="filters" id="filters"></div>
     <div class="looks" id="looks-grid"></div>
     <p class="hint">in the app, one click puts it on every app, every window, the whole mac.</p>
+  </section>
+
+  <section id="make" class="wrap">
+    <div class="center reveal">
+      <p class="eyebrow">make your own</p>
+      <h2>seven clicks to your own cursor.</h2>
+      <p class="lede">pick a shape, a colour, a finish, an outline, a glow, a motion and a size. no sliders unless you want them. every state redraws as you click, and "try it live" puts it on your real cursor while you play.</p>
+    </div>
+    <div class="shot reveal">
+      <img src="/img/create.png" alt="the create page: a big live preview on the left and seven simple steps on the right" width="1800" height="1273" loading="lazy">
+      <p class="caption">11 shapes · 11 finishes · 54 colours · 16 gradients · your own colours too</p>
+    </div>
   </section>
 
   <section id="features" class="wrap">
@@ -107,11 +122,11 @@
     </div>
     <div class="tiles">
       <div class="tile reveal"><div class="k">( •̀ ω •́ )</div><h3>one click, whole mac</h3><p>cursorspacex hands its images to the window server, the same place macOS keeps its own. no overlay, no lag, buttery like the real thing because it is the real thing.</p></div>
-      <div class="tile reveal"><div class="k">✎</div><h3>make your own</h3><p>shape, fill, gradients, outline, glow, glass shine, motion, size. every state redraws live while you tweak.</p></div>
+      <div class="tile reveal"><div class="k">✎</div><h3>shapes and finishes</h3><p>classic, soft, chunky, sleek, needle, dart, triangle, pin, dot, ring and pixel bodies, in flat, glossy, aqua, chrome, holo, stripes, polka, checker, carbon, glitter or outline.</p></div>
       <div class="tile reveal"><div class="k">↺</div><h3>sticks around</h3><p>switch on "keep my cursor after a restart" and your look comes back at login, after sleep and after switching users.</p></div>
       <div class="tile reveal"><div class="k">✦</div><h3>animated looks</h3><p>rainbow, pulse, shimmer and breathe. the wait spinner is themed too, so even waiting looks good.</p></div>
       <div class="tile reveal"><div class="k">⌘</div><h3>menu bar switcher</h3><p>your favorites one click away in the menu bar, plus shuffle and restore. resize anything from 0.75x to 2.5x.</p></div>
-      <div class="tile reveal"><div class="k">{ }</div><h3>open source</h3><p>native swift and swiftui, about 2,000 lines. read every one of them on github. mit licensed.</p></div>
+      <div class="tile reveal"><div class="k">{ }</div><h3>open source</h3><p>native swift and swiftui, every cursor drawn in code. read every line on github. mit licensed.</p></div>
     </div>
   </section>
 
@@ -139,7 +154,7 @@
 </main>
 
 <footer>
-  <span>cursorspacex v0.1.0</span>
+  <span>cursorspacex v0.2.0</span>
   <a href="https://github.com/Louistuis/cursorspacex" class="gh"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>github</a>
   <a href="/install">install</a>
   <span>mit licence</span>
